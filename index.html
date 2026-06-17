@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explorador Geométrico de Cónicas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Explorador Geométrico de Cónicas</h1>
+    <p class="subtitle">Descubre las relaciones visuales entre vértices, focos, excentricidades y directrices.</p>
+  </header>
+
+  <div class="main-wrap">
+    <div class="app-grid">
+      <!-- Barra lateral de controles -->
+      <aside class="sidebar">
+        <h2>Controles</h2>
+        
+        <div class="control-group">
+          <label for="ctype">Tipo de Cónica</label>
+          <select id="ctype">
+            <option value="ellipse">Elipse</option>
+            <option value="parabola">Parábola</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="orient">Orientación</label>
+          <select id="orient">
+            <option value="horizontal">Horizontal</option>
+            <option value="vertical">Vertical</option>
+          </select>
+        </div>
+
+        <!-- Controles para la Elipse -->
+        <div id="ellipse-controls">
+          <div class="control-group">
+            <label for="x0">Centro h (x₀): <span id="x0-val" class="val-span">0</span></label>
+            <input type="range" id="x0" min="-4" max="4" step="0.25" value="0">
+          </div>
+          <div class="control-group">
+            <label for="y0">Centro k (y₀): <span id="y0-val" class="val-span">0</span></label>
+            <input type="range" id="y0" min="-4" max="4" step="0.25" value="0">
+          </div>
+          <div class="control-group">
+            <label for="param-a">Semieje a: <span id="a-val" class="val-span">3</span></label>
+            <input type="range" id="param-a" min="1" max="5" step="0.25" value="3">
+          </div>
+          <div class="control-group">
+            <label for="param-b">Semieje b: <span id="b-val" class="val-span">2.24</span></label>
+            <input type="range" id="param-b" min="0.5" max="4.5" step="0.25" value="2.25">
+          </div>
+          <div class="control-group">
+            <label for="ell-p">Ángulo de P (grados): <span id="ell-p-val" class="val-span">45°</span></label>
+            <input type="range" id="ell-p" min="0" max="360" step="5" value="45">
+          </div>
+        </div>
+
+        <!-- Controles para la Parábola -->
+        <div id="parabola-controls" style="display: none;">
+          <div class="control-group">
+            <label for="px0">Vértice h (x₀): <span id="px0-val" class="val-span">0</span></label>
+            <input type="range" id="px0" min="-4" max="4" step="0.25" value="0">
+          </div>
+          <div class="control-group">
+            <label for="py0">Vértice k (y₀): <span id="py0-val" class="val-span">0</span></label>
+            <input type="range" id="py0" min="-4" max="4" step="0.25" value="0">
+          </div>
+          <div class="control-group">
+            <label for="param-c">Distancia focal c: <span id="c-val" class="val-span">2</span></label>
+            <input type="range" id="param-c" min="-3" max="3" step="0.25" value="2">
+          </div>
+          <div class="control-group">
+            <label for="par-p">Punto móvil P (parámetro t): <span id="par-p-val" class="val-span">2</span></label>
+            <input type="range" id="par-p" min="-5" max="5" step="0.25" value="2">
+          </div>
+        </div>
+
+        <!-- Checkboxes de visibilidad -->
+        <div class="checkbox-group">
+          <label class="chk-label">
+            <input type="checkbox" id="chk-center" checked>
+            <span class="color-dot" style="background: var(--green);"></span>
+            Centro / Vértice
+          </label>
+          <label class="chk-label">
+            <input type="checkbox" id="chk-foci" checked>
+            <span class="color-dot" style="background: var(--red);"></span>
+            Focos F
+          </label>
+          <label class="chk-label" id="chk-vertices-sec-label">
+            <input type="checkbox" id="chk-vertices-sec" checked>
+            <span class="color-dot" style="background: var(--purple);"></span>
+            Vértices Secundarios B
+          </label>
+          <label class="chk-label">
+            <input type="checkbox" id="chk-directrix" checked>
+            <span class="color-dot" style="background: var(--purple);"></span>
+            Directrices
+          </label>
+          <label class="chk-label" id="chk-triangle-label">
+            <input type="checkbox" id="chk-triangle" checked>
+            <span class="color-dot" style="background: var(--blue); border-radius: 0;"></span>
+            Relación geométrica a² = b² + c²
+          </label>
+          <label class="chk-label">
+            <input type="checkbox" id="chk-axes" checked>
+            <span style="width: 10px; height: 1px; background: var(--muted); display: inline-block;"></span>
+            Ejes de simetría
+          </label>
+          <label class="chk-label">
+            <input type="checkbox" id="chk-params" checked>
+            <span style="font-weight: bold; color: var(--accent);">a, b, c</span>
+            Cotas de distancias
+          </label>
+          <label class="chk-label">
+            <input type="checkbox" id="chk-point" checked>
+            <span class="color-dot" style="background: var(--gold);"></span>
+            Punto móvil P y distancias
+          </label>
+        </div>
+      </aside>
+
+      <!-- Panel principal (Lienzo y Resultados) -->
+      <main class="canvas-card">
+        <div class="canvas-container">
+          <canvas id="plotCanvas"></canvas>
+        </div>
+        
+        <div class="readout-grid">
+          <!-- Ecuación -->
+          <div class="eq-box" id="equationReadout">
+            <!-- Cargado por JS -->
+          </div>
+          <!-- Detalles geométricos -->
+          <div class="info-card" id="detailsReadout">
+            <!-- Cargado por JS -->
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+:root {
+  --bg: #f5efe6;
+  --paper: #fffcf9;
+  --ink: #2b2520;
+  --muted: #756c64;
+  --line: #e8ded2;
+  --accent: #c45b30;
+  --blue: #296bb0;
+  --green: #388056;
+  --red: #c93b3b;
+  --purple: #834aa8;
+  --gold: #d48e15;
+  --shadow: rgba(54, 38, 25, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+header {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px 15px;
+}
+
+h1 {
+  margin: 0 0 6px 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.main-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+}
+
+.sidebar, .canvas-card, .info-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 30px var(--shadow);
+}
+
+.sidebar h2, .info-card h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.control-group {
+  margin-bottom: 16px;
+}
+
+label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.val-span {
+  color: var(--accent);
+}
+
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+select:focus {
+  border-color: var(--accent);
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+  margin: 6px 0;
+  cursor: pointer;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+}
+
+.chk-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chk-label input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.canvas-card {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.canvas-container {
+  width: 100%;
+  height: 500px;
+  position: relative;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 12px;
+  background: #fffbf7;
+}
+
+.readout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Estilos de Ecuación Matemática Nativa */
+.eq-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.6rem;
+  font-family: "Georgia", serif;
+  font-style: italic;
+  padding: 15px;
+  border-radius: 14px;
+  background: #fdfaf5;
+  border: 1px solid var(--line);
+  min-height: 85px;
+}
+
+.fraction {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+  margin: 0 4px;
+  line-height: 1.1;
+}
+
+.numerator {
+  border-bottom: 2px solid var(--ink);
+  padding: 0 6px 3px;
+  font-weight: 500;
+}
+
+.denominator {
+  padding: 3px 6px 0;
+  font-weight: 500;
+}
+
+.eq-var {
+  font-weight: bold;
+}
+
+.math-text {
+  font-family: "Georgia", serif;
+  font-style: italic;
+}
+
+.info-card ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.info-card li {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.highlight {
+  font-weight: bold;
+}
+
+@media (max-width: 850px) {
+  .app-grid {
+    grid-template-columns: 1fr;
+  }
+  .readout-grid {
+    grid-template-columns: 1fr;
+  }
+  .canvas-container {
+    height: 400px;
+  }
+}
