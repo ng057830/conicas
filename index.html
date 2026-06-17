@@ -23,6 +23,7 @@
           <select id="ctype">
             <option value="ellipse">Elipse</option>
             <option value="parabola">Parábola</option>
+            <option value="hyperbola">Hipérbola</option>
           </select>
         </div>
 
@@ -78,12 +79,48 @@
           </div>
         </div>
 
+        <!-- Controles para la Hipérbola -->
+        <div id="hyperbola-controls" style="display: none;">
+          <div class="control-group">
+            <label for="hx0">Centro h (x₀): <span id="hx0-val" class="val-span">0</span></label>
+            <input type="range" id="hx0" min="-4" max="4" step="0.25" value="0">
+          </div>
+          <div class="control-group">
+            <label for="hy0">Centro k (y₀): <span id="hy0-val" class="val-span">0</span></label>
+            <input type="range" id="hy0" min="-4" max="4" step="0.25" value="0">
+          </div>
+          <div class="control-group">
+            <label for="param-ha">Semieje real a: <span id="ha-val" class="val-span">2</span></label>
+            <input type="range" id="param-ha" min="1" max="4" step="0.25" value="2">
+          </div>
+          <div class="control-group">
+            <label for="param-hb">Semieje imaginario b: <span id="hb-val" class="val-span">1.5</span></label>
+            <input type="range" id="param-hb" min="0.5" max="4.5" step="0.25" value="1.5">
+          </div>
+          <div class="control-group">
+            <label for="hyp-u">Parámetro P (u): <span id="hyp-u-val" class="val-span">0.8</span></label>
+            <input type="range" id="hyp-u" min="-2" max="2" step="0.1" value="0.8">
+          </div>
+          <div class="control-group">
+            <label for="hyp-branch">Rama de P: <span id="hyp-branch-val" class="val-span">Derecha/Superior</span></label>
+            <select id="hyp-branch">
+              <option value="1">Derecha / Superior</option>
+              <option value="-1">Izquierda / Inferior</option>
+            </select>
+          </div>
+        </div>
+
         <!-- Checkboxes de visibilidad -->
         <div class="checkbox-group">
           <label class="chk-label">
             <input type="checkbox" id="chk-center" checked>
             <span class="color-dot" style="background: var(--green);"></span>
             Centro / Vértice
+          </label>
+          <label class="chk-label">
+            <input type="checkbox" id="chk-vertices" checked>
+            <span class="color-dot" style="background: var(--blue);"></span>
+            Vértices V
           </label>
           <label class="chk-label">
             <input type="checkbox" id="chk-foci" checked>
@@ -93,7 +130,7 @@
           <label class="chk-label" id="chk-vertices-sec-label">
             <input type="checkbox" id="chk-vertices-sec" checked>
             <span class="color-dot" style="background: var(--purple);"></span>
-            Vértices Secundarios B
+            <span id="chk-vertices-sec-text">Vértices Secundarios B</span>
           </label>
           <label class="chk-label">
             <input type="checkbox" id="chk-directrix" checked>
@@ -103,7 +140,12 @@
           <label class="chk-label" id="chk-triangle-label">
             <input type="checkbox" id="chk-triangle" checked>
             <span class="color-dot" style="background: var(--blue); border-radius: 0;"></span>
-            Relación geométrica a² = b² + c²
+            <span id="chk-triangle-text">Relación geométrica a² = b² + c²</span>
+          </label>
+          <label class="chk-label" id="chk-asymptotes-label" style="display: none;">
+            <input type="checkbox" id="chk-asymptotes" checked>
+            <span class="color-dot" style="background: var(--muted); border-radius: 0; width: 10px; height: 10px;"></span>
+            Asíntotas y Caja Auxiliar
           </label>
           <label class="chk-label">
             <input type="checkbox" id="chk-axes" checked>

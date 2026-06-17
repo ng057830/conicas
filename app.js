@@ -79,6 +79,97 @@ function formatLinearTerm(variable, val) {
   return `(<span class="eq-var">${variable}</span> ${sign} ${fmt(Math.abs(val))})`;
 }
 
+// Generar ecuación de la elipse en HTML nativo
+function getEllipseEquationHTML(x0, y0, a, b, isHorizontal) {
+  const numX = formatNumeratorSquare('x', x0);
+  const numY = formatNumeratorSquare('y', y0);
+  const denA = formatDenominatorSquare(a);
+  const denB = formatDenominatorSquare(b);
+  
+  if (isHorizontal) {
+    return `
+      <div class="fraction">
+        <span class="numerator">${numX}</span>
+        <span class="denominator">${denA}</span>
+      </div>
+      <span>+</span>
+      <div class="fraction">
+        <span class="numerator">${numY}</span>
+        <span class="denominator">${denB}</span>
+      </div>
+      <span>= 1</span>
+    `;
+  } else {
+    return `
+      <div class="fraction">
+        <span class="numerator">${numX}</span>
+        <span class="denominator">${denB}</span>
+      </div>
+      <span>+</span>
+      <div class="fraction">
+        <span class="numerator">${numY}</span>
+        <span class="denominator">${denA}</span>
+      </div>
+      <span>= 1</span>
+    `;
+  }
+}
+
+// Generar ecuación de la parábola en HTML nativo
+function getParabolaEquationHTML(x0, y0, c, isHorizontal) {
+  if (isHorizontal) {
+    const numY = formatNumeratorSquare('y', y0);
+    const linX = formatLinearTerm('x', x0);
+    const factor = 4 * c;
+    return `
+      <span>${numY} = ${fmt(factor)}${linX}</span>
+    `;
+  } else {
+    const numX = formatNumeratorSquare('x', x0);
+    const linY = formatLinearTerm('y', y0);
+    const factor = 4 * c;
+    return `
+      <span>${numX} = ${fmt(factor)}${linY}</span>
+    `;
+  }
+}
+
+// Generar ecuación de la hipérbola en HTML nativo
+function getHyperbolaEquationHTML(x0, y0, a, b, isHorizontal) {
+  const numX = formatNumeratorSquare('x', x0);
+  const numY = formatNumeratorSquare('y', y0);
+  const denA = formatDenominatorSquare(a);
+  const denB = formatDenominatorSquare(b);
+  
+  if (isHorizontal) {
+    return `
+      <div class="fraction">
+        <span class="numerator">${numX}</span>
+        <span class="denominator">${denA}</span>
+      </div>
+      <span>−</span>
+      <div class="fraction">
+        <span class="numerator">${numY}</span>
+        <span class="denominator">${denB}</span>
+      </div>
+      <span>= 1</span>
+    `;
+  } else {
+    return `
+      <div class="fraction">
+        <span class="numerator">${numY}</span>
+        <span class="denominator">${denA}</span>
+      </div>
+      <span>−</span>
+      <div class="fraction">
+        <span class="numerator">${numX}</span>
+        <span class="denominator">${denB}</span>
+      </div>
+      <span>= 1</span>
+    `;
+  }
+}
+
 // Verificar si un checkbox está activo
 const isChecked = id => $(id) && $(id).checked;
 
@@ -195,17 +286,39 @@ function updateApp() {
   const type = $('ctype').value;
   const orient = $('orient').value;
 
-  // Mostrar u ocultar controles específicos
+  // Mostrar u ocultar controles específicos y ajustar etiquetas dinámicas
   if (type === 'ellipse') {
     $('ellipse-controls').style.display = 'block';
     $('parabola-controls').style.display = 'none';
+    $('hyperbola-controls').style.display = 'none';
+    
     $('chk-vertices-sec-label').style.display = 'flex';
+    $('chk-vertices-sec-text').textContent = "Vértices Secundarios B";
+    
     $('chk-triangle-label').style.display = 'flex';
-  } else {
+    $('chk-triangle-text').textContent = "Relación geométrica a² = b² + c²";
+    
+    $('chk-asymptotes-label').style.display = 'none';
+  } else if (type === 'parabola') {
     $('ellipse-controls').style.display = 'none';
     $('parabola-controls').style.display = 'block';
+    $('hyperbola-controls').style.display = 'none';
+    
     $('chk-vertices-sec-label').style.display = 'none';
     $('chk-triangle-label').style.display = 'none';
+    $('chk-asymptotes-label').style.display = 'none';
+  } else if (type === 'hyperbola') {
+    $('ellipse-controls').style.display = 'none';
+    $('parabola-controls').style.display = 'none';
+    $('hyperbola-controls').style.display = 'block';
+    
+    $('chk-vertices-sec-label').style.display = 'flex';
+    $('chk-vertices-sec-text').textContent = "Vértices Conjugados B";
+    
+    $('chk-triangle-label').style.display = 'flex';
+    $('chk-triangle-text').textContent = "Relación geométrica c² = a² + b²";
+    
+    $('chk-asymptotes-label').style.display = 'flex';
   }
 
   // Dibujar fondo
@@ -586,6 +699,242 @@ function updateApp() {
           Cualquier punto P cumple la igualdad de distancias:
           <br>
           <span class="highlight">d(P, F) = d(P, directriz)</span> &rarr; ${fmt(distPF)} = ${fmt(distPd)}
+    `;
+  }
+
+  if (type === 'hyperbola') {
+    let x0 = +$('hx0').value;
+    let y0 = +$('hy0').value;
+    let a = +$('param-ha').value;
+    let b = +$('param-hb').value;
+    let hyp_u = +$('hyp-u').value;
+    let branch = +$('hyp-branch').value;
+
+    $('hx0-val').textContent = fmt(x0);
+    $('hy0-val').textContent = fmt(y0);
+    $('ha-val').textContent = fmt(a);
+    $('hb-val').textContent = fmt(b);
+    $('hyp-u-val').textContent = fmt(hyp_u);
+    $('hyp-branch-val').textContent = branch === 1 ? (orient === 'horizontal' ? "Derecha" : "Superior") : (orient === 'horizontal' ? "Izquierda" : "Inferior");
+
+    const c = Math.sqrt(a * a + b * b);
+    const e = a > 0 ? c / a : 1;
+
+    const C = [x0, y0];
+    let V1, V2, B1, B2, F1, F2;
+
+    if (orient === 'horizontal') {
+      V1 = [x0 - a, y0];
+      V2 = [x0 + a, y0];
+      B1 = [x0, y0 - b];
+      B2 = [x0, y0 + b];
+      F1 = [x0 - c, y0];
+      F2 = [x0 + c, y0];
+    } else {
+      V1 = [x0, y0 - a];
+      V2 = [x0, y0 + a];
+      B1 = [x0 - b, y0];
+      B2 = [x0 + b, y0];
+      F1 = [x0, y0 - c];
+      F2 = [x0, y0 + c];
+    }
+
+    // Dibujar Curva Hipérbola (dos ramas)
+    const uMax = 2.5;
+    const pts1 = [];
+    const pts2 = [];
+    for (let i = -100; i <= 100; i++) {
+      const u = (i / 100) * uMax;
+      if (orient === 'horizontal') {
+        pts1.push([x0 + a * Math.cosh(u), y0 + b * Math.sinh(u)]);
+        pts2.push([x0 - a * Math.cosh(u), y0 + b * Math.sinh(u)]);
+      } else {
+        pts1.push([x0 + b * Math.sinh(u), y0 + a * Math.cosh(u)]);
+        pts2.push([x0 + b * Math.sinh(u), y0 - a * Math.cosh(u)]);
+      }
+    }
+    
+    drawCurve(pts1, COLORS.accent, 3);
+    drawCurve(pts2, COLORS.accent, 3);
+
+    // Ejes de simetría
+    if (isChecked('chk-axes')) {
+      drawLine(xmin, y0, xmax, y0, COLORS.muted, 1, true);
+      drawLine(x0, ymin, x0, ymax, COLORS.muted, 1, true);
+    }
+
+    // Asíntotas y Caja Auxiliar
+    if (isChecked('chk-asymptotes')) {
+      const wBox = orient === 'horizontal' ? a : b;
+      const hBox = orient === 'horizontal' ? b : a;
+      ctx.save();
+      ctx.strokeStyle = '#b8a693';
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([5, 5]);
+      const pTL = map(x0 - wBox, y0 + hBox);
+      const pBR = map(x0 + wBox, y0 - hBox);
+      ctx.strokeRect(pTL.x, pTL.y, pBR.x - pTL.x, pBR.y - pTL.y);
+      ctx.restore();
+
+      const m = hBox / wBox;
+      const yAsymp1_min = y0 + m * (xmin - x0);
+      const yAsymp1_max = y0 + m * (xmax - x0);
+      const yAsymp2_min = y0 - m * (xmin - x0);
+      const yAsymp2_max = y0 - m * (xmax - x0);
+
+      drawLine(xmin, yAsymp1_min, xmax, yAsymp1_max, COLORS.muted, 1.2, true);
+      drawLine(xmin, yAsymp2_min, xmax, yAsymp2_max, COLORS.muted, 1.2, true);
+
+      labelAt(xmax - 2.2, yAsymp1_max - 0.2, "asímtota", COLORS.muted);
+    }
+
+    // Centro, Focos y Vértices
+    if (isChecked('chk-center')) drawPoint(C[0], C[1], COLORS.green, "C");
+    if (isChecked('chk-vertices')) {
+      drawPoint(V1[0], V1[1], COLORS.blue, "V₁");
+      drawPoint(V2[0], V2[1], COLORS.blue, "V₂");
+    }
+    if (isChecked('chk-vertices-sec')) {
+      drawPoint(B1[0], B1[1], COLORS.purple, "B₁");
+      drawPoint(B2[0], B2[1], COLORS.purple, "B₂");
+    }
+    if (isChecked('chk-foci')) {
+      drawPoint(F1[0], F1[1], COLORS.red, "F₁");
+      drawPoint(F2[0], F2[1], COLORS.red, "F₂");
+    }
+
+    // Directrices
+    const dDist = (a * a) / c;
+    if (isChecked('chk-directrix')) {
+      if (orient === 'horizontal') {
+        drawLine(x0 - dDist, ymin, x0 - dDist, ymax, COLORS.purple, 2, true);
+        drawLine(x0 + dDist, ymin, x0 + dDist, ymax, COLORS.purple, 2, true);
+        labelAt(x0 - dDist, ymax - 0.5, "d₁", COLORS.purple);
+        labelAt(x0 + dDist, ymax - 0.5, "d₂", COLORS.purple);
+      } else {
+        drawLine(xmin, y0 - dDist, xmax, y0 - dDist, COLORS.purple, 2, true);
+        drawLine(xmin, y0 + dDist, xmax, y0 + dDist, COLORS.purple, 2, true);
+        labelAt(xmin + 0.3, y0 - dDist, "d₁", COLORS.purple);
+        labelAt(xmin + 0.3, y0 + dDist, "d₂", COLORS.purple);
+      }
+    }
+
+    // Relación Geométrica c² = a² + b² (Triángulo rectángulo)
+    if (isChecked('chk-triangle')) {
+      const tV = orient === 'horizontal' ? [x0 + a, y0] : [x0, y0 + a];
+      const tK = orient === 'horizontal' ? [x0 + a, y0 + b] : [x0 + b, y0 + a];
+
+      ctx.save();
+      ctx.fillStyle = 'rgba(41, 107, 176, 0.08)';
+      ctx.beginPath();
+      const pC = map(x0, y0);
+      const pV = map(tV[0], tV[1]);
+      const pK = map(tK[0], tK[1]);
+      ctx.moveTo(pC.x, pC.y);
+      ctx.lineTo(pV.x, pV.y);
+      ctx.lineTo(pK.x, pK.y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      drawLine(x0, y0, tV[0], tV[1], COLORS.blue, 2.2); // cateto a
+      drawLine(tV[0], tV[1], tK[0], tK[1], COLORS.green, 2.2); // cateto b
+      drawLine(x0, y0, tK[0], tK[1], COLORS.red, 2.2); // hipotenusa c
+
+      const signX = tV[0] >= x0 ? -0.25 : 0.25;
+      const signY = tK[1] >= y0 ? 0.25 : -0.25;
+      if (orient === 'horizontal') {
+        drawRightAngle(tV[0], tV[1], signX, signY, COLORS.ink);
+      } else {
+        drawRightAngle(tV[0], tV[1], signY, signX, COLORS.ink);
+      }
+
+      if (orient === 'horizontal') {
+        labelAt(x0 + a/2, y0 + 0.15, "a", COLORS.blue);
+        labelAt(x0 + a + 0.1, y0 + b/2, "b", COLORS.green);
+        labelAt(x0 + a/2 - 0.2, y0 + b/2 + 0.15, "c", COLORS.red);
+      } else {
+        labelAt(x0 + 0.15, y0 + a/2, "a", COLORS.blue);
+        labelAt(x0 + b/2, y0 + a + 0.1, "b", COLORS.green);
+        labelAt(x0 + b/2 + 0.15, y0 + a/2 - 0.2, "c", COLORS.red);
+      }
+    }
+
+    // Cotas de los ejes si no se está mostrando el triángulo
+    if (isChecked('chk-params') && !isChecked('chk-triangle')) {
+      if (orient === 'horizontal') {
+        drawLine(x0, y0 - 0.2, x0 + a, y0 - 0.2, COLORS.blue, 2.5);
+        labelAt(x0 + a / 2, y0 - 0.2, "a", COLORS.blue);
+
+        drawLine(x0 + a + 0.2, y0, x0 + a + 0.2, y0 + b, COLORS.green, 2.5);
+        labelAt(x0 + a + 0.2, y0 + b / 2, "b", COLORS.green);
+
+        drawLine(x0, y0 - 0.5, x0 + c, y0 - 0.5, COLORS.red, 2.5);
+        labelAt(x0 + c / 2, y0 - 0.5, "c", COLORS.red);
+      } else {
+        drawLine(x0 - 0.2, y0, x0 - 0.2, y0 + a, COLORS.blue, 2.5);
+        labelAt(x0 - 0.2, y0 + a / 2, "a", COLORS.blue);
+
+        drawLine(x0, y0 + a + 0.2, x0 + b, y0 + a + 0.2, COLORS.green, 2.5);
+        labelAt(x0 + b / 2, y0 + a + 0.2, "b", COLORS.green);
+
+        drawLine(x0 - 0.5, y0, x0 - 0.5, y0 + c, COLORS.red, 2.5);
+        labelAt(x0 - 0.5, y0 + c / 2, "c", COLORS.red);
+      }
+    }
+
+    // Calcular Punto móvil P
+    const P = orient === 'horizontal'
+      ? [x0 + branch * a * Math.cosh(hyp_u), y0 + b * Math.sinh(hyp_u)]
+      : [x0 + b * Math.sinh(hyp_u), y0 + branch * a * Math.cosh(hyp_u)];
+
+    let activeF, activeDVal, distPF, distPd, Q;
+    const isPositiveBranch = branch === 1;
+
+    if (orient === 'horizontal') {
+      activeF = isPositiveBranch ? F2 : F1;
+      activeDVal = isPositiveBranch ? x0 + dDist : x0 - dDist;
+      Q = [activeDVal, P[1]];
+    } else {
+      activeF = isPositiveBranch ? F2 : F1;
+      activeDVal = isPositiveBranch ? y0 + dDist : y0 - dDist;
+      Q = [P[0], activeDVal];
+    }
+
+    distPF = Math.hypot(P[0] - activeF[0], P[1] - activeF[1]);
+    distPd = Math.hypot(P[0] - Q[0], P[1] - Q[1]);
+
+    if (isChecked('chk-point')) {
+      drawPoint(Q[0], Q[1], COLORS.purple, "Q");
+      drawLine(P[0], P[1], Q[0], Q[1], COLORS.gold, 2, true);
+      labelAt((P[0] + Q[0])/2, (P[1] + Q[1])/2 + 0.15, `d(P,d)=${fmt(distPd)}`, COLORS.gold);
+
+      drawLine(P[0], P[1], activeF[0], activeF[1], COLORS.gold, 2);
+      labelAt((P[0] + activeF[0])/2 + 0.15, (P[1] + activeF[1])/2, `d(P,F)=${fmt(distPF)}`, COLORS.gold);
+
+      drawPoint(P[0], P[1], COLORS.gold, "P");
+    }
+
+    // Ecuación en HTML
+    eqHTML = getHyperbolaEquationHTML(x0, y0, a, b, orient === 'horizontal');
+
+    // Detalles informativos
+    detailsHTML = `
+      <h3>Relaciones Geométricas</h3>
+      <ul>
+        <li><span class="highlight">Centro:</span> C = ${point(C[0], C[1])}</li>
+        <li><span class="highlight">Vértices Reales:</span> V₁ = ${point(V1[0], V1[1])}, V₂ = ${point(V2[0], V2[1])} (semieje real <span class="highlight">a = ${fmt(a)}</span>)</li>
+        <li><span class="highlight">Vértices Conjugados:</span> B₁ = ${point(B1[0], B1[1])}, B₂ = ${point(B2[0], B2[1])} (semieje imaginario/conjugado <span class="highlight">b = ${fmt(b)}</span>)</li>
+        <li><span class="highlight">Focos:</span> F₁ = ${point(F1[0], F1[1])}, F₂ = ${point(F2[0], F2[1])} (semidistancia focal <span class="highlight">c = ${fmt(c)}</span>)</li>
+        <li><span class="highlight">Directrices:</span> ${orient === 'horizontal' ? `x = ${fmt(x0 - dDist)} y x = ${fmt(x0 + dDist)}` : `y = ${fmt(y0 - dDist)} y y = ${fmt(y0 + dDist)}`} (distancia al centro <span class="math-text">a/e = a²/c = ${fmt(dDist)}</span>)</li>
+        <li><span class="highlight">Excentricidad (e):</span> <span class="math-text">e = c / a</span> = ${fmt(c)} / ${fmt(a)} = <span class="highlight">${fmt(e)}</span> (> 1)</li>
+        <li><span class="highlight">Propiedad de la Directriz:</span> Al mover P, observa que:
+          <br>
+          <span class="math-text">d(P, F) / d(P, d)</span> = ${fmt(distPF)} / ${fmt(distPd)} = <span class="highlight">${fmt(distPF / distPd)}</span> (constante e igual a la excentricidad <span class="math-text">e</span>)
+        </li>
+        <li><span class="highlight">Relación pitagórica:</span> Mira el triángulo rectángulo sombreado. Su hipotenusa mide exactamente la distancia focal <span class="math-text">c</span>.
+          <br>
+          De ahí se tiene: <span class="math-text">c² = a² + b²</span>
         </li>
       </ul>
     `;
@@ -614,7 +963,8 @@ const inputIds = [
   'ctype', 'orient', 
   'x0', 'y0', 'param-a', 'param-b', 'ell-p',
   'px0', 'py0', 'param-c', 'par-p',
-  'chk-center', 'chk-foci', 'chk-vertices-sec', 'chk-directrix', 'chk-triangle', 'chk-axes', 'chk-params', 'chk-point'
+  'hx0', 'hy0', 'param-ha', 'param-hb', 'hyp-u', 'hyp-branch',
+  'chk-center', 'chk-vertices', 'chk-foci', 'chk-vertices-sec', 'chk-directrix', 'chk-triangle', 'chk-axes', 'chk-params', 'chk-point', 'chk-asymptotes'
 ];
 
 inputIds.forEach(id => {
